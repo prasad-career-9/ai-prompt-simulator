@@ -1,0 +1,140 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>AI Prompt Engineering Simulator</title>
+    <style>
+        body { 
+            font-family: 'Arial', sans-serif; 
+            max-width: 800px; 
+            margin: 0 auto; 
+            padding: 20px; 
+            background-color: #f0f0f0;
+        }
+        .card {
+            background-color: white;
+            border-radius: 8px;
+            padding: 20px;
+            box-shadow: 0 4px 6px rgba(0, 0, 0, 0.1);
+            margin-bottom: 20px;
+        }
+        h1, h2 { color: #333; }
+        select, textarea, button {
+            width: 100%;
+            padding: 10px;
+            margin-bottom: 10px;
+            border-radius: 5px;
+            border: 1px solid #ddd;
+        }
+        button { 
+            background-color: #4CAF50; 
+            color: white; 
+            border: none; 
+            cursor: pointer; 
+            font-size: 16px;
+            transition: background-color 0.3s;
+        }
+        button:hover { background-color: #45a049; }
+        #scenarioContext, #result {
+            background-color: #e9e9e9;
+            padding: 15px;
+            border-radius: 5px;
+            margin-bottom: 15px;
+            white-space: pre-wrap;
+        }
+        #feedback {
+            font-weight: bold;
+            margin-top: 10px;
+        }
+    </style>
+</head>
+<body>
+    <div class="card">
+        <h1>AI Prompt Engineering Simulator</h1>
+        <p>Practice creating effective prompts for different job scenarios:</p>
+        
+        <select id="jobScenario" onchange="updateScenarioContext()">
+            <option value="">Select a job scenario</option>
+            <option value="marketing">Marketing Campaign</option>
+            <option value="coding">Code Debugging</option>
+            <option value="writing">Content Writing</option>
+            <option value="analysis">Data Analysis</option>
+        </select>
+        
+        <h2>Scenario Context:</h2>
+        <div id="scenarioContext">Select a job scenario to see the context.</div>
+        
+        <textarea id="prompt" rows="5" placeholder="Enter your prompt here..."></textarea>
+        
+        <button onclick="evaluatePrompt()">Evaluate Prompt</button>
+        
+        <h2>Result:</h2>
+        <div id="result"></div>
+        <div id="feedback"></div>
+    </div>
+
+    <script>
+        const scenarios = {
+            marketing: {
+                context: "You're tasked with creating a marketing campaign for a new eco-friendly water bottle.",
+                keywords: ["target audience", "unique selling points", "social media", "sustainability"]
+            },
+            coding: {
+                context: "You're debugging a Python script that's throwing an unexpected IndexError.",
+                keywords: ["error message", "code snippet", "expected behavior", "troubleshooting steps"]
+            },
+            writing: {
+                context: "You need to write a blog post about the benefits of meditation for beginners.",
+                keywords: ["target audience", "key benefits", "beginner-friendly tips", "scientific backing"]
+            },
+            analysis: {
+                context: "You're analyzing customer satisfaction survey data to improve a software product.",
+                keywords: ["data visualization", "key metrics", "trend analysis", "actionable insights"]
+            }
+        };
+
+        function updateScenarioContext() {
+            const scenario = document.getElementById('jobScenario').value;
+            const contextDiv = document.getElementById('scenarioContext');
+            
+            if (scenario && scenarios[scenario]) {
+                contextDiv.textContent = scenarios[scenario].context;
+            } else {
+                contextDiv.textContent = "Select a job scenario to see the context.";
+            }
+        }
+
+        function evaluatePrompt() {
+            const scenario = document.getElementById('jobScenario').value;
+            const prompt = document.getElementById('prompt').value.toLowerCase();
+            const result = document.getElementById('result');
+            const feedback = document.getElementById('feedback');
+
+            if (!scenario || !prompt) {
+                result.textContent = "Please select a scenario and enter a prompt.";
+                feedback.textContent = "";
+                return;
+            }
+
+            const { context, keywords } = scenarios[scenario];
+            result.textContent = `Your Prompt: ${prompt}`;
+
+            const matchedKeywords = keywords.filter(keyword => prompt.includes(keyword.toLowerCase()));
+            const score = Math.round((matchedKeywords.length / keywords.length) * 100);
+
+            let feedbackText = `Prompt Effectiveness Score: ${score}%\n`;
+            feedbackText += matchedKeywords.length > 0 ? 
+                `Great job including these key elements: ${matchedKeywords.join(", ")}\n` : 
+                "Your prompt could be improved by including some key elements.\n";
+
+            if (score < 100) {
+                const missingKeywords = keywords.filter(keyword => !matchedKeywords.includes(keyword));
+                feedbackText += `Consider adding: ${missingKeywords.join(", ")}`;
+            }
+
+            feedback.textContent = feedbackText;
+        }
+    </script>
+</body>
+</html>
